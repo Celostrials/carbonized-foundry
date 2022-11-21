@@ -1,0 +1,14 @@
+/composer.lock
+/phpunit.xml
+/phpunit-dama-doctrine.xml
+/vendor/
+/bin/tools/*/vendor/
+/build/
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/tests/Fixtures/tmp
+/var/
+/docs/output/
+/.env
+
+--no-commit
