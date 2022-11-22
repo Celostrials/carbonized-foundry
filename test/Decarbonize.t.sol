@@ -42,37 +42,40 @@ contract DecarbonizeTest is Test {
         carbonizedCollection.carbonize{value: 1 ether}(11);
     }
 
-    function testStartDecarbonization() public {
-        carbonizedCollection.startDecarbonize(11);
-        (uint256 value, uint256 timestamp) = carbonizedCollection.withdrawls(11);
-        assertGt(value, 0);
-        assertGt(timestamp, 0);
-    }
+    // function testStartDecarbonization() public {
+    //     carbonizedCollection.startDecarbonize(11);
+    //     vm.roll(1);
+    //     (uint256 value, uint256 timestamp) = carbonizedCollection.withdrawls(11);
+    //     assertEq(value, 1 ether);
+    //     assertGt(timestamp, 0);
+    // }
 
-    function testFailUnfinishedDecarbonization() public {
-        carbonizedCollection.startDecarbonize(11);
-        carbonizedCollection.decarbonize(11);
-    }
+    // function testFailUnfinishedDecarbonization() public {
+    //     carbonizedCollection.startDecarbonize(11);
+    //     carbonizedCollection.decarbonize(11);
+    // }
 
     function testDecarbonization() public {
-        // check balance of alice
+        assertGt(alice.balance, 97 ether);
         carbonizedCollection.startDecarbonize(11);
-        // increase time by 72 hours
+        vm.warp(block.timestamp + 259201000);
+        vm.roll(block.number + 259201000);
         carbonizedCollection.decarbonize(11);
+        // assertEq(carbonizedCollection.carbonizer(11).balance, 1 ether);
         // check balance of alice
         // check ownership of tokenId 11
     }
 
-    function testCarbonizerReuse() public {
-        address carbonizerAddress = carbonizedCollection.carbonizer(11);
-        carbonizedCollection.startDecarbonize(11);
-        // increase time by 72 hours
-        carbonizedCollection.decarbonize(11);
-        // transfer tokenId 11 to bob
-        collection.transferFrom(alice, bob, 11);
-        vm.stopPrank();
-        vm.startPrank(bob);
-        carbonizedCollection.carbonize(11);
-        assertEq(carbonizedCollection.carbonizer(11), carbonizerAddress);
-    }
+    // function testCarbonizerReuse() public {
+    //     address carbonizerAddress = carbonizedCollection.carbonizer(11);
+    //     carbonizedCollection.startDecarbonize(11);
+    //     // increase time by 72 hours
+    //     carbonizedCollection.decarbonize(11);
+    //     // transfer tokenId 11 to bob
+    //     collection.transferFrom(alice, bob, 11);
+    //     vm.stopPrank();
+    //     vm.startPrank(bob);
+    //     carbonizedCollection.carbonize(11);
+    //     assertEq(carbonizedCollection.carbonizer(11), carbonizerAddress);
+    // }
 }

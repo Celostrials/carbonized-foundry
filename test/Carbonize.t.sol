@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "forge-std/console.sol";
 import "../src/MockNFT.sol";
 import "../src/CarbonizedCollection.sol";
 import "../src/CarbonizerDeployer.sol";
@@ -56,8 +55,9 @@ contract CarbonizeTest is Test {
 
     function testCarbonizedYield() public {
         carbonizedCollection.carbonize{value: 1 ether}(11);
-        // increase time to get yield
-        assertTrue(carbonizedCollection.getYield(11) == 0);
+        // add celo to stCelo 'Address' contract
+        vm.deal(0x4aAD04D41FD7fd495503731C5a2579e19054C432, 100 ether);
+        assertGt(carbonizedCollection.getYield(11), 0);
     }
 
     function testCarbonizeCarbonized() public {

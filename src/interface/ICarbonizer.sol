@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 interface ICarbonizer {
     function deposit() external payable;
 
-    function withdraw(address _receiver) external;
+    function withdraw() external;
 
     function withdrawls() external view returns (uint256 value, uint256 timestamp);
 
@@ -13,5 +13,5 @@ interface ICarbonizer {
 
     function getDeposit() external view returns (uint256);
 
-    function claim() external;
+    function claim(address _receiver) external;
 }
