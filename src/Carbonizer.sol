@@ -28,7 +28,7 @@ contract Carbonizer is Ownable, ICarbonizer {
         gTokenVault.depositETH{value: msg.value}(address(this));
     }
 
-    function withdraw() external override {
+    function withdraw() external override { 
         gTokenVault.withdrawAll(address(this), address(this));
     }
 
@@ -40,8 +40,6 @@ contract Carbonizer is Ownable, ICarbonizer {
         (uint256 value, ) = withdrawls();
         gTokenVault.claim();
         console.log(gTokenVault.asset().balanceOf(address(this)));
-        console.log(address(this).balance);
-        console.log(IERC20(0x471EcE3750Da237f93B8E339c536989b8978a438).balanceOf(address(this)));
         // gTokenVault.asset().transfer(_receiver, value);
     }
 

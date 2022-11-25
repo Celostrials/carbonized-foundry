@@ -61,9 +61,9 @@ contract CarbonizedCollection is
             carbonizer[tokenId] != address(0),
             "CarbonizedCollection: tokenId is not carbonized"
         );
-        ICarbonizer(carbonizer[tokenId]).withdraw();
+        ICarbonizer(carbonizer[tokenId]).withdraw(); 
     }
-
+ 
     function decarbonize(uint256 tokenId) public {
         require(ownerOf(tokenId) == msg.sender, "CarbonizedCollection: caller does not own tokenId");
         originalCollection.safeTransferFrom(address(this), msg.sender, tokenId);

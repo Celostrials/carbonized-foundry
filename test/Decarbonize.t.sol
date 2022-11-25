@@ -7,19 +7,21 @@ import "../src/MockNFT.sol";
 import "../src/CarbonizedCollection.sol";
 import "../src/CarbonizerDeployer.sol";
 import "../src/Carbonizer.sol";
-
+import "../src/interface/ImpactVaultInterface.sol";
 
 contract DecarbonizeTest is Test {
     uint256 celoFork;
     address alice;
     address bob;
     address deployer;
+    ImpactVaultInterface gTokenVault;
     MockNFT public collection;
     CarbonizedCollection public carbonizedCollection;
     CarbonizerDeployer public carbonizerDeployer;
 
     function setUp() public {
-        address gTokenVault = 0x8A1639098644A229d08F441ea45A63AE050Ee018;
+        gTokenVault = ImpactVaultInterface(0x8A1639098644A229d08F441ea45A63AE050Ee018);
+        vm.label(address(gTokenVault), "gTokenVault");
         celoFork = vm.createFork("https://forno.celo.org");
         vm.selectFork(celoFork);
         alice = address(1);
@@ -30,7 +32,7 @@ contract DecarbonizeTest is Test {
         vm.startPrank(deployer);
         collection = new MockNFT("Mock", "MOCK", "https://ipfs");
         carbonizedCollection = new CarbonizedCollection();
-        carbonizerDeployer = new CarbonizerDeployer(gTokenVault);
+        carbonizerDeployer = new CarbonizerDeployer(address(gTokenVault));
         carbonizedCollection.initialize(address(collection), address(carbonizerDeployer), "Mock02", "M02", "https://forno.celo.org");
         vm.stopPrank();
         vm.startPrank(bob);
@@ -58,9 +60,16 @@ contract DecarbonizeTest is Test {
     function testDecarbonization() public {
         assertGt(alice.balance, 97 ether);
         carbonizedCollection.startDecarbonize(11);
-        vm.warp(block.timestamp + 259201000);
-        vm.roll(block.number + 259201000);
+        (uint256 value, uint256 timestamp) = carbonizedCollection.withdrawls(11);
+        // Roll forward by unlock period, simulate CELO withdrawn from stCELO.
+        // vm.deal(gTokenVault, 100 ether);
+        vm.warp(timestamp);
+        console.log(address(gTokenVault).balance);
+        console.log(value);
         carbonizedCollection.decarbonize(11);
+        (value, timestamp) = carbonizedCollection.withdrawls(11);
+        console.log(address(gTokenVault).balance);
+        console.log(value);
         // assertEq(carbonizedCollection.carbonizer(11).balance, 1 ether);
         // check balance of alice
         // check ownership of tokenId 11
