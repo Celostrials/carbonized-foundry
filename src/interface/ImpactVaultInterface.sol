@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 interface ImpactVaultInterface {
+    event Claim(address indexed receiver, uint256 indexed amount);
+
     // Returns the depositing asset.
     function asset() external returns (IERC20Upgradeable);
 
@@ -20,7 +22,10 @@ interface ImpactVaultInterface {
     // Withdraws asset to owned by "_owner" to "_receiver".
     function withdrawAll(address _receiver, address _owner) external;
 
-    function withdrawals(address _owner) external view returns (uint256 value, uint256 timestamp);
+    function withdrawals(address _owner)
+        external
+        view
+        returns (uint256 value, uint256 timestamp);
 
     // Withdraws yield asset owned by "_owner" to "_receiver". Note that
     // "_amount" is denominated in asset so this is converted to the
@@ -41,8 +46,16 @@ interface ImpactVaultInterface {
     function getYield(address _address) external view returns (uint256);
 
     // Converts amount of yield asset to amount in asset.
-    function convertToAsset(uint256 _amountYieldAsset) external view returns (uint256);
+    function convertToAsset(uint256 _amountYieldAsset)
+        external
+        view
+        returns (uint256);
 
     // Converts amount of asset to amount in yield asset.
-    function convertToYieldAsset(uint256 _amountAsset) external view returns (uint256);
+    function convertToYieldAsset(uint256 _amountAsset)
+        external
+        view
+        returns (uint256);
+
+    function balanceOf(address) external view returns (uint256);
 }

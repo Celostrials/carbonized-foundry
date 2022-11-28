@@ -10,7 +10,6 @@ import "./interface/ImpactVaultInterface.sol";
 import "./interface/ICarbonizer.sol";
 import "forge-std/console.sol";
 
-
 /// @title Carbonizer
 /// @author Bridger Zoske
 contract Carbonizer is Ownable, ICarbonizer {
@@ -21,38 +20,52 @@ contract Carbonizer is Ownable, ICarbonizer {
 
     constructor(address _gTokenVaultAddress, address _carbonizedCollection) {
         gTokenVault = ImpactVaultInterface(_gTokenVaultAddress);
-        carbonizedCollection = _carbonizedCollection; 
+        carbonizedCollection = _carbonizedCollection;
     }
 
     function deposit() external payable override {
         gTokenVault.depositETH{value: msg.value}(address(this));
     }
 
-    function withdraw() external override { 
+    function withdraw() external override {
+        console.log("pre withdraw", gTokenVault.balanceOf(address(this)));
         gTokenVault.withdrawAll(address(this), address(this));
+        console.log("post withdraw", gTokenVault.balanceOf(address(this)));
     }
 
-    function withdrawls() public override view returns (uint256 value, uint256 timestamp) {
-        return gTokenVault.withdrawals(address(this)); 
+    function withdrawls()
+        public
+        view
+        override
+        returns (uint256 value, uint256 timestamp)
+    {
+        return gTokenVault.withdrawals(address(this));
     }
 
     function claim(address _receiver) external override {
-        (uint256 value, ) = withdrawls();
+        (uint256 value, uint256 timestamp) = withdrawls();
+        console.log("value", value);
+        console.log("timestamp", timestamp);
+        console.log("block.timestamp", block.timestamp);
+        console.log("pre-claim", address(this).balance);
         gTokenVault.claim();
-        console.log(gTokenVault.asset().balanceOf(address(this)));
+        console.log("post-claim", address(this).balance);
         // gTokenVault.asset().transfer(_receiver, value);
     }
 
-    function getYield() external override view returns (uint256) {
+    function getYield() external view override returns (uint256) {
         return gTokenVault.getYield(address(this));
     }
 
-    function getDeposit() external override view returns (uint256) {
+    function getDeposit() external view override returns (uint256) {
         return IERC20(address(gTokenVault)).balanceOf(address(this));
     }
 
     modifier onlyCarbonizedCollection() {
-        require(msg.sender == carbonizedCollection, "Carbonizer: Unauthorized caller");
+        require(
+            msg.sender == carbonizedCollection,
+            "Carbonizer: Unauthorized caller"
+        );
         _;
     }
 }

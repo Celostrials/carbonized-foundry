@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "forge-std/Test.sol";
+import "@celo-foundry/Test.sol";
 import "forge-std/console.sol";
 import "../src/MockNFT.sol";
 import "../src/CarbonizedCollection.sol";
 import "../src/CarbonizerDeployer.sol";
 import "../src/Carbonizer.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../src/interface/ImpactVaultInterface.sol";
 
 contract DecarbonizeTest is Test {
@@ -19,8 +20,12 @@ contract DecarbonizeTest is Test {
     CarbonizedCollection public carbonizedCollection;
     CarbonizerDeployer public carbonizerDeployer;
 
+    event Claim(address indexed receiver, uint256 indexed amount);
+
     function setUp() public {
-        gTokenVault = ImpactVaultInterface(0x8A1639098644A229d08F441ea45A63AE050Ee018);
+        gTokenVault = ImpactVaultInterface(
+            0x8A1639098644A229d08F441ea45A63AE050Ee018
+        );
         vm.label(address(gTokenVault), "gTokenVault");
         celoFork = vm.createFork("https://forno.celo.org");
         vm.selectFork(celoFork);
@@ -33,7 +38,13 @@ contract DecarbonizeTest is Test {
         collection = new MockNFT("Mock", "MOCK", "https://ipfs");
         carbonizedCollection = new CarbonizedCollection();
         carbonizerDeployer = new CarbonizerDeployer(address(gTokenVault));
-        carbonizedCollection.initialize(address(collection), address(carbonizerDeployer), "Mock02", "M02", "https://forno.celo.org");
+        carbonizedCollection.initialize(
+            address(collection),
+            address(carbonizerDeployer),
+            "Mock02",
+            "M02",
+            "https://forno.celo.org"
+        );
         vm.stopPrank();
         vm.startPrank(bob);
         collection.setApprovalForAll(address(carbonizedCollection), true);
@@ -59,17 +70,37 @@ contract DecarbonizeTest is Test {
 
     function testDecarbonization() public {
         assertGt(alice.balance, 97 ether);
+
         carbonizedCollection.startDecarbonize(11);
-        (uint256 value, uint256 timestamp) = carbonizedCollection.withdrawls(11);
+        (uint256 value, uint256 timestamp) = carbonizedCollection.withdrawls(
+            11
+        );
         // Roll forward by unlock period, simulate CELO withdrawn from stCELO.
         // vm.deal(gTokenVault, 100 ether);
-        vm.warp(timestamp);
-        console.log(address(gTokenVault).balance);
-        console.log(value);
+        vm.warp(timestamp + 1);
+        // console.log(address(gTokenVault).balance);
+        // uint256 pre = address(gTokenVault).balance;
+
+        address carbonizer = carbonizedCollection.carbonizer(11);
+
+        uint256 pre = IERC20(0x471EcE3750Da237f93B8E339c536989b8978a438)
+            .balanceOf(address(carbonizer));
+        // console.log(value);
+        vm.expectEmit(true, true, false, false, address(gTokenVault));
+
+        // We emit the event we expect to see.
+        emit Claim(carbonizedCollection.carbonizer(11), 1 ether);
+
         carbonizedCollection.decarbonize(11);
-        (value, timestamp) = carbonizedCollection.withdrawls(11);
-        console.log(address(gTokenVault).balance);
-        console.log(value);
+        // (value, timestamp) = carbonizedCollection.withdrawls(11);
+        console.log("pre ", pre);
+        console.log(
+            "post",
+            IERC20(0x471EcE3750Da237f93B8E339c536989b8978a438).balanceOf(
+                address(carbonizer)
+            )
+        );
+        // console.log(value);
         // assertEq(carbonizedCollection.carbonizer(11).balance, 1 ether);
         // check balance of alice
         // check ownership of tokenId 11
