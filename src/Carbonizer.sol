@@ -23,8 +23,13 @@ contract Carbonizer is Ownable, ICarbonizer {
         carbonizedCollection = _carbonizedCollection;
     }
 
+    receive() external payable {}
+
     function deposit() external payable override {
+        console.log("pre-deposit");
+        console.log("gTokenVault inside", address(gTokenVault));
         gTokenVault.depositETH{value: msg.value}(address(this));
+        console.log("post-deposit");
     }
 
     function withdraw() external override {
@@ -46,10 +51,16 @@ contract Carbonizer is Ownable, ICarbonizer {
         (uint256 value, uint256 timestamp) = withdrawls();
         console.log("value", value);
         console.log("timestamp", timestamp);
-        console.log("block.timestamp", block.timestamp);
-        console.log("pre-claim", address(this).balance);
+        // console.log("block.timestamp", block.timestamp);
+        // console.log("pre-claim", address(this).balance);
+        console.log("carbonizer", address(this));
+        console.log("address(gTokenVault)", address(gTokenVault));
+        console.log(
+            "hasWithdrawalReady",
+            gTokenVault.hasWithdrawalReady(address(this))
+        );
         gTokenVault.claim();
-        console.log("post-claim", address(this).balance);
+        // console.log("post-claim", address(this).balance);
         // gTokenVault.asset().transfer(_receiver, value);
     }
 

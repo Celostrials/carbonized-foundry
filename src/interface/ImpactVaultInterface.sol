@@ -22,6 +22,12 @@ interface ImpactVaultInterface {
     // Withdraws asset to owned by "_owner" to "_receiver".
     function withdrawAll(address _receiver, address _owner) external;
 
+    function hasWithdrawalReady(address _address) external view returns (bool);
+
+    function owner() external view returns (address);
+
+    function getAPY() external view returns (uint256);
+
     function withdrawals(address _owner)
         external
         view
