@@ -195,8 +195,8 @@ contract SpiralsCeloImpactVault is INativeTokenImpactVault {
 
         console.log("vault pre  ", getGoldToken().balanceOf(address(this)));
         console.log("caller pre ", getGoldToken().balanceOf(_msgSender()));
-        console.log(address(this).balance);
-        console.log(_msgSender().balance);
+        // console.log(address(this).balance);
+        // console.log(_msgSender().balance);
         console.log("getGoldToken()", address(getGoldToken()));
 
         bool res = getGoldToken().transfer(_msgSender(), celoToWithdraw);
@@ -204,8 +204,8 @@ contract SpiralsCeloImpactVault is INativeTokenImpactVault {
         console.log("res", res);
         console.log("vault post ", getGoldToken().balanceOf(address(this)));
         console.log("caller post", getGoldToken().balanceOf(_msgSender()));
-        console.log(address(this).balance);
-        console.log(_msgSender().balance);
+        // console.log(address(this).balance);
+        // console.log(_msgSender().balance);
 
         // payable(_msgSender()).transfer(celoToWithdraw);
         console.log("post-transfer");
