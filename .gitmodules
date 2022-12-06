@@ -10,3 +10,6 @@
 	path = lib/openzeppelin-contracts-upgradeable
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
 	branch = v4.8.0
+[submodule "lib/celo-foundry"]
+	path = lib/celo-foundry
+	url = https://github.com/spiralsprotocol/celo-foundry
