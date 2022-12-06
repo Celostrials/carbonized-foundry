@@ -18,8 +18,6 @@ contract CarbonizeTest is Test {
 
     function setUp() public {
         address gTokenVault = 0x8A1639098644A229d08F441ea45A63AE050Ee018;
-        celoFork = vm.createFork("https://forno.celo.org");
-        vm.selectFork(celoFork);
         alice = address(1);
         deployer = address(2);
         vm.startPrank(deployer);
