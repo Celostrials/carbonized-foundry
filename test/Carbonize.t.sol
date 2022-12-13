@@ -15,9 +15,9 @@ contract CarbonizeTest is Test {
     MockNFT public collection;
     CarbonizedCollection public carbonizedCollection;
     CarbonizerDeployer public carbonizerDeployer;
+    address gTokenVault = 0x8A1639098644A229d08F441ea45A63AE050Ee018;
 
     function setUp() public {
-        address gTokenVault = 0x8A1639098644A229d08F441ea45A63AE050Ee018;
         alice = address(1);
         deployer = address(2);
         vm.startPrank(deployer);
@@ -54,7 +54,7 @@ contract CarbonizeTest is Test {
     function testCarbonizedYield() public {
         carbonizedCollection.carbonize{value: 1 ether}(11);
         // add celo to stCelo 'Address' contract
-        vm.deal(0x4aAD04D41FD7fd495503731C5a2579e19054C432, 100 ether);
+        vm.deal(0x4aAD04D41FD7fd495503731C5a2579e19054C432, 100000 ether);
         assertGt(carbonizedCollection.getYield(11), 0);
     }
 

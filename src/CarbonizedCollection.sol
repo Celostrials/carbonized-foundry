@@ -59,7 +59,7 @@ contract CarbonizedCollection is
             _safeMint(msg.sender, tokenId);
         }
         ICarbonizer(carbonizer[tokenId]).deposit{value: msg.value}();
-        emit TokenIdCarbonized(tokenId, msg.value);
+        emit TokenIdCarbonized(carbonizer[tokenId], msg.value);
     }
 
     function startDecarbonize(uint256 tokenId) external {
@@ -75,7 +75,7 @@ contract CarbonizedCollection is
         originalCollection.safeTransferFrom(address(this), msg.sender, tokenId);
         ICarbonizer(carbonizer[tokenId]).claim(msg.sender); 
         _burn(tokenId);
-        emit TokenIdDecarbonized(tokenId);
+        emit TokenIdDecarbonized(carbonizer[tokenId]);
     }
 
     /* ========== VIEWS ========== */
@@ -122,7 +122,7 @@ contract CarbonizedCollection is
 
     /* ========== EVENTS ========== */   
 
-    event TokenIdCarbonized(uint256 tokenId, uint256 amount);
+    event TokenIdCarbonized(address carbonizer, uint256 amount);
     
-    event TokenIdDecarbonized(uint256 tokenId);
+    event TokenIdDecarbonized(address carbonizer);
 }
